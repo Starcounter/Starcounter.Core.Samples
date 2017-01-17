@@ -1,0 +1,12 @@
+project.lock.json
+GENERATED_CLASSES
+*.xproj.user
+*.VC.db
+.vs
+*.log
+*.nupkg
+scllvm_temp/
+bin/
+obj/
+clang++
+starcounter.notify
