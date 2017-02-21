@@ -38,7 +38,18 @@ namespace HelloWorldCore
     {
         public static void Main(string[] args)
         {
+            const string dbname = "HelloWorldCoreDatabase";
+
+            // Make sure we have a database, create one if not.
+            var options = Starcounter.Core.Options.StarcounterOptions.TryOpenExisting(dbname);
+            if (options == null)
+            {
+                System.IO.Directory.CreateDirectory(dbname);
+                Starcounter.Core.Bluestar.ScCreateDb.Execute(dbname);
+            }
+
             using (var appHost = new Starcounter.Core.Hosting.AppHostBuilder()
+                .UseDatabase(dbname)
                 .AddCommandLine(args)
                 .Build())
             {
