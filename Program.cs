@@ -28,7 +28,7 @@ namespace HelloWorldCore
 
         // Current QP implementation can't do SUM(), but this is probably just as fast.
         //  => Db.SQL<decimal>("SELECT SUM(e.Amount) FROM Expense e WHERE e.Spender = ?", this).First;
-        public decimal CurrentBalance
+        public decimal CurrentDebt
         {
             get
             {
@@ -91,8 +91,8 @@ namespace HelloWorldCore
                 {
                     foreach (var p in Db.SQL<Spender>("SELECT s FROM Spender s"))
                     {
-                        Console.WriteLine("Found Spender {0} {1} with balance {2}",
-                            p.FirstName, p.LastName, p.CurrentBalance);
+                        Console.WriteLine("Found Spender {0} {1} with debt balance {2}",
+                            p.FirstName, p.LastName, p.CurrentDebt);
                     }
                 });
             }
