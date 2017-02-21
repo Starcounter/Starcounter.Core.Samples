@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using Starcounter.Core;
-using Starcounter.Core.Hosting;
 
 namespace HelloWorldCore
 {
@@ -39,7 +38,7 @@ namespace HelloWorldCore
     {
         public static void Main(string[] args)
         {
-            using (var appHost = new AppHostBuilder()
+            using (var appHost = new Starcounter.Core.Hosting.AppHostBuilder()
                 .AddCommandLine(args)
                 .Build())
             {
