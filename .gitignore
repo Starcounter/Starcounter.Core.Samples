@@ -8,5 +8,6 @@ GENERATED_CLASSES
 scllvm_temp/
 bin/
 obj/
+HelloWorldCoreDatabase/
 clang++
 starcounter.notify
