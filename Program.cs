@@ -23,7 +23,7 @@ namespace HelloWorldCore
     {
         // This property won't be stored in the database since it fails
         // the requirements listed above (it's neither writeable nor virtual).
-        public IEnumerable<Expense> Spendings
+        public IEnumerable<Expense> Expenses
             => Db.SQL<Expense>("SELECT e FROM Expense e WHERE e.Spender = ?", this);
 
         // Current QP implementation can't do SUM(), but this is probably just as fast.
@@ -33,7 +33,7 @@ namespace HelloWorldCore
             get
             {
                 decimal sum = 0;
-                foreach (var e in Spendings)
+                foreach (var e in Expenses)
                     sum += e.Amount;
                 return sum;
             }
