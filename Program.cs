@@ -5,8 +5,11 @@ using Starcounter.Core;
 
 namespace HelloWorldCore
 {
+    // NOTE! While we don't have to declare database classes as abstract,
+    // by doing so we ensure that new Person() will fail to compile,
+    // helping us to find the places we need to do Db.Insert<Person>().
     [Database]
-    public class Person
+    public abstract class Person
     {
         // NOTE! We need to declare database class fields using
         // public virtual properties with public auto-implemented
@@ -16,7 +19,7 @@ namespace HelloWorldCore
     }
 
     [Database]
-    public class Spender : Person
+    public abstract class Spender : Person
     {
         public IEnumerable<Expense> Spendings
             => Db.SQL<Expense>("SELECT e FROM Expense e WHERE e.Spender = ?", this);
@@ -36,7 +39,7 @@ namespace HelloWorldCore
     }
 
     [Database]
-    public class Expense
+    public abstract class Expense
     {
         // NOTE! Adding the [Index] attribute to a property
         // will cause an index to be created on it if needed.
