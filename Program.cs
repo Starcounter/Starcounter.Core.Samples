@@ -9,7 +9,8 @@ namespace HelloWorldCore
     public class Person
     {
         // NOTE! We need to declare database class fields using
-        // public virtual properties.
+        // public virtual properties with public auto-implemented
+        // getter and setter.
         public virtual string FirstName { get; set; }
         public virtual string LastName { get; set; }
     }
