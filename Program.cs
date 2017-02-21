@@ -12,15 +12,17 @@ namespace HelloWorldCore
     public abstract class Person
     {
         // NOTE! We need to declare database class fields using
-        // public virtual properties with public auto-implemented
-        // getter and setter.
-        public virtual string FirstName { get; set; }
-        public virtual string LastName { get; set; }
+        // public virtual (or abstract) properties with public
+        // auto-implemented getter and setter.
+        public abstract string FirstName { get; set; }
+        public abstract string LastName { get; set; }
     }
 
     [Database]
     public abstract class Spender : Person
     {
+        // This property won't be stored in the database since it fails
+        // the requirements listed above (it's neither writeable nor virtual).
         public IEnumerable<Expense> Spendings
             => Db.SQL<Expense>("SELECT e FROM Expense e WHERE e.Spender = ?", this);
 
