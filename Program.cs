@@ -18,11 +18,21 @@ namespace HelloWorldCore
     [Database]
     public class Spender : Person
     {
-        public IEnumerable<Expense> Spendings =>
-            Db.SQL<Expense>("SELECT e FROM Expense e WHERE e.Spender = ?", this);
+        public IEnumerable<Expense> Spendings
+            => Db.SQL<Expense>("SELECT e FROM Expense e WHERE e.Spender = ?", this);
 
-        public decimal CurrentBalance =>
-            Db.SQL<decimal>("SELECT SUM(e.Amount) FROM Expense e WHERE e.Spender = ?", this).First;
+        // Current QP implementation can't do SUM(), but this is probably just as fast.
+        //  => Db.SQL<decimal>("SELECT SUM(e.Amount) FROM Expense e WHERE e.Spender = ?", this).First;
+        public decimal CurrentBalance
+        {
+            get
+            {
+                decimal sum = 0;
+                foreach (var e in Db.SQL<Expense>("SELECT e FROM Expense e WHERE e.Spender = ?", this))
+                    sum += e.Amount;
+                return sum;
+            }
+        }
     }
 
     [Database]
