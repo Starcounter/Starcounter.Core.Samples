@@ -28,7 +28,7 @@ namespace HelloWorldCore
             get
             {
                 decimal sum = 0;
-                foreach (var e in Db.SQL<Expense>("SELECT e FROM Expense e WHERE e.Spender = ?", this))
+                foreach (var e in Spendings)
                     sum += e.Amount;
                 return sum;
             }
