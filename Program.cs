@@ -1,69 +1,41 @@
 ﻿
 using System;
-using System.Text;
-using Starcounter;
+using Starcounter.Core;
+using Starcounter.Core.Abstractions.Database;
+using Starcounter.Core.Hosting;
 
-namespace MinimalApp
+namespace HelloWorldCore
 {
     [Database]
-    public class Monster
+    public class Person
     {
-        public virtual void Inserted()
-        {
-            Name = this.GetType().Name;
-            LastSeen = DateTime.Now;
-        }
-
-        [Index]
-        public virtual string Name { get; set; }
-        public virtual DateTime LastSeen { get; set; }
-
-        public virtual void Act()
-        {
-            Console.WriteLine("It seems to wait.");
-        }
+        // NOTE! We need to declare database class fields using
+        // public virtual properties.
+        public virtual string FirstName { get; set; }
+        public virtual string LastName { get; set; }
     }
 
     [Database]
-    public class Grue : Monster
+    public class Spender : Person
     {
-        public override void Inserted()
-        {
-            base.Inserted();
-            IsBored = true;
-        }
+        public ISQLResult<Expense> Spendings =>
+            Db.SQL<Expense>("SELECT e FROM Expense e WHERE e.Spender = ?", this);
 
-        [Index]
-        public virtual ulong StomachWeight { get; set; }
-        public virtual bool HasEaten { get; set; }
-        public virtual bool IsBored { get; set; }
-
-        public void Eat(ulong kg)
-        {
-            StomachWeight += kg;
-        }
-
-        public override void Act()
-        {
-            if (HasEaten)
-            {
-                Console.WriteLine("It seems fed.");
-                IsBored = true;
-            }
-            else
-            {
-                Eat(80);
-                IsBored = false;
-                Console.WriteLine("It eats an adventurer.");
-            }
-            if (IsBored)
-            {
-                Console.WriteLine("It's bored.");
-            }
-        }
+        public decimal CurrentBalance =>
+            Db.SQL<decimal>("SELECT SUM(e.Amount) FROM Expense e WHERE e.Spender = ?", this).First;
     }
-    
-    public class Program
+
+    [Database]
+    public class Expense
+    {
+        // NOTE! Adding the [Index] attribute to a property
+        // will cause an index to be created on it if needed.
+        [Index]
+        public virtual Spender Spender { get; set; }
+        public virtual decimal Amount { get; set; }
+    }
+
+    class Program
     {
         public static void Main(string[] args)
         {
@@ -74,89 +46,30 @@ namespace MinimalApp
                 // Start the app host inside the using so that
                 // we get cleanup if an exception occurs.
                 appHost.Start();
+
                 // We are now connected to the given database
-                GrueTesting();
-                PrintTableHierarchy();
-            }
-        }
-
-        static void GrueTesting()
-        {
-            ulong objectNo = 0;
-
-            Db.Transact(() => {
-                var grue = Db.Insert<Grue>();
-                grue.Inserted();
-                objectNo = grue.GetObjectNo();
-                Console.WriteLine("{0}: A {1}{2} appears in a puff of smoke.",
-                    grue.LastSeen,
-                    grue.IsBored ? "bored " : "",
-                    grue.Name
-                    );
-                grue.Act();
-            });
-
-            Db.Transact(() => {
-                var grue = Db.FromId<Grue>(objectNo);
-                Console.WriteLine("A {1}{2} looms in the darkness, last seen {0}.",
-                    grue.LastSeen,
-                    grue.IsBored ? "bored " : "",
-                    grue.Name
-                    );
-                grue.Act();
-            });
-
-            int grue_count = 0;
-            Db.Transact(() => {
-                foreach (var grue in Db.SQL<Grue>("SELECT g FROM Grue g"))
+                // and are free to access it.
+                Db.Transact(() =>
                 {
-                    grue_count++;
-                    Console.WriteLine("{0} last seen {1}", grue.Name, grue.LastSeen);
-                }
-            });
-            Console.WriteLine("Db.SQL<Grue>(\"SELECT...\") returns {0} rows", grue_count);
-        }
-
-        static void PrintTableHierarchy()
-        {
-            Db.Transact(() => {
-                PrintTablesThatInherit(null, 0);
-            });
-        }
-
-        static void PrintTablesThatInherit(Starcounter.Metadata.Table parent, int level)
-        {
-            string indent = (new StringBuilder(level).Insert(0, " ", level * 2)).ToString();
-            var result = Db.SQL<Starcounter.Metadata.Table>("SELECT t FROM \"Starcounter.Metadata.Table\" t");
-            foreach (var t in result)
-            {
-                if (object.Equals(t.Inherits, parent))
+                    var anyone = Db.SQL<Spender>("SELECT s FROM Spender s").First;
+                    if (anyone == null)
+                    {
+                        // NOTE! We must use Db.Insert<T>() instead of new T()
+                        var p = Db.Insert<Spender>();
+                        p.FirstName = "John";
+                        p.LastName = "Doe";
+                    }
+                });
+                
+                Db.Transact(() =>
                 {
-                    Console.Write("{0}{1}", indent, t.Name);
-                    PrintIndexesForTable(t);
-                    Console.WriteLine();
-                    PrintTablesThatInherit(t, level + 1);
-                }
+                    foreach (var p in Db.SQL<Spender>("SELECT s FROM Spender s"))
+                    {
+                        Console.WriteLine("Found Spender {0} {1} with balance {2}",
+                            p.FirstName, p.LastName, p.CurrentBalance);
+                    }
+                });
             }
-        }
-
-        static void PrintIndexesForTable(Starcounter.Metadata.Table parent)
-        {
-            var result = Db.SQL<Starcounter.Metadata.Index>("SELECT i FROM \"Starcounter.Metadata.Index\" i");
-            int found = 0;
-            foreach (var t in result)
-            {
-                if (t.Table.FullName == parent.FullName)
-                {
-                    if (found == 0)
-                        Console.Write("\t\t[{0}", t.Name);
-                    else
-                        Console.Write(" {0}", t.Name);
-                    found++;
-                }
-            }
-            if (found > 0)
-                Console.Write("]");
         }
     }
 }
