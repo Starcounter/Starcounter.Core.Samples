@@ -12,8 +12,8 @@ namespace HelloWorldCore
     public abstract class Person
     {
         // NOTE! We need to declare database class fields using
-        // public virtual (or abstract) properties with public
-        // auto-implemented getter and setter.
+        // non-private virtual (or abstract) properties with
+        // non-private auto-implemented getter and setter.
         public abstract string FirstName { get; set; }
         public abstract string LastName { get; set; }
     }
