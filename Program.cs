@@ -1,7 +1,7 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using Starcounter.Core;
-using Starcounter.Core.Abstractions.Database;
 using Starcounter.Core.Hosting;
 
 namespace HelloWorldCore
@@ -18,7 +18,7 @@ namespace HelloWorldCore
     [Database]
     public class Spender : Person
     {
-        public ISQLResult<Expense> Spendings =>
+        public IEnumerable<Expense> Spendings =>
             Db.SQL<Expense>("SELECT e FROM Expense e WHERE e.Spender = ?", this);
 
         public decimal CurrentBalance =>
