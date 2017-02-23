@@ -5,9 +5,7 @@ GENERATED_CLASSES
 .vs
 *.log
 *.nupkg
-scllvm_temp/
 bin/
 obj/
-HelloWorldCoreDatabase/
-clang++
+*_LocalDb/
 starcounter.notify
