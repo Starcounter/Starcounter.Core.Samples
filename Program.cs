@@ -3,31 +3,41 @@ using System;
 using System.Collections.Generic;
 using Starcounter.Core;
 
-namespace HelloWorldCore
+namespace Program
 {
-    // NOTE! While we don't have to declare database classes as abstract,
+    // While we don't have to declare database classes as abstract,
     // by doing so we ensure that new Person() will fail to compile,
     // helping us to find the places we need to do Db.Insert<Person>().
+    //
+    // This limitation will be removed when the new Weaver is implemented.
     [Database]
     public abstract class Person
     {
-        // NOTE! We need to declare database class fields using
-        // non-private virtual (or abstract) properties with
-        // non-private auto-implemented getter and setter.
+        // We need to declare database fields using properties with
+        // auto-implemented getter and setter.
+        //
+        // Also, until the new Weaver is implemented, they must also
+        // be declared non-private and be virtual (or abstract).
         public abstract string FirstName { get; set; }
+
+        // Adding the [Index] attribute to a database field
+        // will cause an index to be created on it if needed.
+        [Index]
         public abstract string LastName { get; set; }
+
+        // This property won't be stored in the database since it fails
+        // the requirements listed above (it's not writeable).
+        public string Name { get { return FirstName + " " + LastName; } }
     }
 
     [Database]
     public abstract class Spender : Person
     {
-        // This property won't be stored in the database since it fails
-        // the requirements listed above (it's neither writeable nor virtual).
+        // A Db.SQL result is an IEnumerable<T> over the database class instances.
         public IEnumerable<Expense> Expenses
             => Db.SQL<Expense>("SELECT e FROM Expense e WHERE e.Spender = ?", this);
 
-        // Current QP implementation can't do SUM(), but this is probably just as fast.
-        //  => Db.SQL<decimal>("SELECT SUM(e.Amount) FROM Expense e WHERE e.Spender = ?", this).First;
+        // The new QP implementation currently can't do SUM(), but this is fast enough.
         public decimal CurrentDebt
         {
             get
@@ -43,22 +53,19 @@ namespace HelloWorldCore
     [Database]
     public abstract class Expense
     {
-        // NOTE! Adding the [Index] attribute to a property
-        // will cause an index to be created on it if needed.
         [Index]
-        public virtual Spender Spender { get; set; }
-        public virtual decimal Amount { get; set; }
+        public abstract Spender Spender { get; set; }
+        public abstract decimal Amount { get; set; }
     }
 
     class Program
     {
         public static void Main(string[] args)
         {
-            const string dbname = "HelloWorldCoreDatabase";
+            string dbname = args.Length > 0 ? args[0] : "LocalDb";
 
             // Make sure we have a database, create one if not.
-            var options = Starcounter.Core.Options.StarcounterOptions.TryOpenExisting(dbname);
-            if (options == null)
+            if (Starcounter.Core.Options.StarcounterOptions.TryOpenExisting(dbname) == null)
             {
                 System.IO.Directory.CreateDirectory(dbname);
                 Starcounter.Core.Bluestar.ScCreateDb.Execute(dbname);
@@ -66,7 +73,6 @@ namespace HelloWorldCore
 
             using (var appHost = new Starcounter.Core.Hosting.AppHostBuilder()
                 .UseDatabase(dbname)
-                .AddCommandLine(args)
                 .Build())
             {
                 // Start the app host inside the using so that
@@ -75,12 +81,13 @@ namespace HelloWorldCore
 
                 // We are now connected to the given database
                 // and are free to access it.
+
                 Db.Transact(() =>
                 {
-                    var anyone = Db.SQL<Spender>("SELECT s FROM Spender s").First;
-                    if (anyone == null)
+                    if (Db.SQL<Spender>("SELECT s FROM Spender s").First == null)
                     {
-                        // NOTE! We must use Db.Insert<T>() instead of new T()
+                        // We must use Db.Insert<T>() instead of new T()
+                        // until the new Weaver is implemented.
                         var p = Db.Insert<Spender>();
                         p.FirstName = "John";
                         p.LastName = "Doe";
