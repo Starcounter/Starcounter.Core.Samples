@@ -25,7 +25,7 @@ public abstract class Person
 
     // This property won't be stored in the database since it fails
     // the requirements listed above (it's not writeable).
-    public string Name { get { return FirstName + " " + LastName; } }
+    public string FullName { get { return FirstName + " " + LastName; } }
 }
 
 [Database]
@@ -96,8 +96,8 @@ class Program
             {
                 foreach (var p in Db.SQL<Spender>("SELECT s FROM Spender s"))
                 {
-                    Console.WriteLine("Found Spender {0} {1} with debt balance {2}",
-                        p.FirstName, p.LastName, p.CurrentDebt);
+                    Console.WriteLine("Found Spender {0} with debt balance {1}",
+                        p.FullName, p.CurrentDebt);
                 }
             });
         }
