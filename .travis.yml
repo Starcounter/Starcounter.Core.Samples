@@ -5,6 +5,11 @@ sudo: required
 mono: none
 dotnet: 1.0.0-rc4-004771
 
+addons:
+  apt:
+    packages:
+    - libboost-all-dev
+
 script:
   - dotnet restore
   - dotnet run
