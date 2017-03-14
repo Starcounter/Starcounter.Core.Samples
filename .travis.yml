@@ -10,4 +10,4 @@ before_install:
   - docker build -t starcounter/starcounter.core.samples .
 
 script:
-  - docker run starcounter/starcounter.core.samples
+  - docker run -it --rm starcounter/starcounter.core.samples
