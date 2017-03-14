@@ -6,8 +6,8 @@ mono: none
 dotnet: 1.0.0-rc4-004771
 
 before_install:
-  - wget http://mirrors.kernel.org/ubuntu/pool/universe/b/boost-defaults/libboost-system-dev_1.58.0.1ubuntu1_amd64.deb
-  - sudo dpkg -i libboost-system-dev_1.58.0.1ubuntu1_amd64.deb
+  - wget http://mirrors.kernel.org/ubuntu/pool/universe/b/boost1.58/libboost-system1.58-dev_1.58.0+dfsg-5ubuntu3_amd64.deb
+  - sudo dpkg -i libboost-system1.58-dev_1.58.0+dfsg-5ubuntu3_amd64.deb
 
 script:
   - dotnet restore
