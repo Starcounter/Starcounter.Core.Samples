@@ -4,7 +4,7 @@
 
 This sample will run without a prior Starcounter installation or database. It currently doesn't do much, as it's intended to simply show how to create a Starcounter.Core project, create a local database programatically and connect to it.
 
-Install [.NET Core 1.0.4 or later](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.0.4-download.md), clone this repository and in the top level directory of the repository do:
+Install [.NET Core 2.0 SDK or later](https://www.microsoft.com/net/download/core), clone this repository and in the top level directory of the repository do:
 
 ```
 dotnet restore
