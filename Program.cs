@@ -63,7 +63,7 @@ class Program
         string dbname = args.Length > 0 ? args[0] : "Program_LocalDb";
 
         // Make sure we have a database, create one if not.
-        if (Starcounter.Core.Options.StarcounterOptions.TryOpenExisting(dbname) == null)
+        if (!Starcounter.Core.Options.StarcounterOptions.TryOpenExisting(dbname))
         {
             System.IO.Directory.CreateDirectory(dbname);
             Starcounter.Core.Bluestar.ScCreateDb.Execute(dbname);
