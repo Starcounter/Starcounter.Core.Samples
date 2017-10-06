@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Starcounter.Core.Hosting" Version="0.6.0" />
-    <PackageReference Include="runtime.native.Starcounter.Bluestar" Version="2.4.0-*" />
+    <PackageReference Include="runtime.native.Starcounter.Bluestar" Version="2.4.0-pre-010841" />
   </ItemGroup>
 
 </Project>
