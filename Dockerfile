@@ -30,5 +30,4 @@ COPY NuGet.Config /starcounter.core.samples
 
 CMD cd /starcounter.core.samples && \
 	dotnet restore && \
-	export StarcounterBin=`find / -name 'scdata' -printf "%h\n"` && \
 	dotnet run
