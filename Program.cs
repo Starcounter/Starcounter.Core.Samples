@@ -1,7 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using Starcounter.Nova;
+using Starcounter.Core;
 
 // While we don't have to declare database classes as abstract,
 // by doing so we ensure that new Person() will fail to compile,
@@ -63,13 +63,13 @@ class Program
         string dbname = args.Length > 0 ? args[0] : "Program_LocalDb";
 
         // Make sure we have a database, create one if not.
-        if (!Starcounter.Nova.Options.StarcounterOptions.TryOpenExisting(dbname))
+        if (!Starcounter.Core.Options.StarcounterOptions.TryOpenExisting(dbname))
         {
             System.IO.Directory.CreateDirectory(dbname);
-            Starcounter.Nova.Bluestar.ScCreateDb.Execute(dbname);
+            Starcounter.Core.Bluestar.ScCreateDb.Execute(dbname);
         }
 
-        using (var appHost = new Starcounter.Nova.Hosting.AppHostBuilder()
+        using (var appHost = new Starcounter.Core.Hosting.AppHostBuilder()
             .UseDatabase(dbname)
             .Build())
         {
