@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Starcounter.Nova;
 
 // While we don't have to declare database classes as abstract,
@@ -36,16 +37,7 @@ public abstract class Spender : Person
         => Db.SQL<Expense>("SELECT e FROM Expense e WHERE e.Spender = ?", this);
 
     // The new QP implementation currently can't do SUM(), but this is fast enough.
-    public decimal CurrentDebt
-    {
-        get
-        {
-            decimal sum = 0;
-            foreach (var e in Expenses)
-                sum += e.Amount;
-            return sum;
-        }
-    }
+    public decimal CurrentDebt => Expenses.Sum(e => e.Amount);
 }
 
 [Database]
