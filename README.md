@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Starcounter/Starcounter.Core.Samples.svg?branch=master)](https://travis-ci.org/Starcounter/Starcounter.Core.Samples)
+[![Build Status](https://travis-ci.org/Starcounter/Starcounter.Nova.Samples.svg?branch=master)](https://travis-ci.org/Starcounter/Starcounter.Nova.Samples)
 
 # Starcounter.Core.Samples 
 
