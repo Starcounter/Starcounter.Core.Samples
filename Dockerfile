@@ -13,12 +13,13 @@ RUN export DEBIAN_FRONTEND='noninteractive' && \
 		libaio1 \
 		libstdc++6 \
         && \
-	echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ xenial main" > /etc/apt/sources.list.d/dotnetdev.list && \
-	apt-key adv --keyserver apt-mo.trafficmanager.net --recv-keys 417A0893 && \
 	add-apt-repository ppa:ubuntu-toolchain-r/test && \
 	apt-get update -q && \
 	apt-get install gcc-4.9 && \
-	apt-get upgrade libstdc++6 && \
+	apt-get upgrade libstdc++6 && \		
+	echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ xenial main" > /etc/apt/sources.list.d/dotnetdev.list && \
+	apt-key adv --keyserver apt-mo.trafficmanager.net --recv-keys 417A0893 && \
+	apt-get update -q && \
 	apt-get install -qy dotnet-dev-1.0.4 dotnet-sdk-2.0.0 && \
 	mkdir /starcounter.core.samples && \
 	mkdir dotnet-warmup && \
