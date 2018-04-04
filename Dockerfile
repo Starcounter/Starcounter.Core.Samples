@@ -13,6 +13,7 @@ RUN export DEBIAN_FRONTEND='noninteractive' && \
 		libaio1 \
 		libstdc++6 \
         && \
+	apt-get install software-properties-common && \
 	add-apt-repository ppa:ubuntu-toolchain-r/test && \
 	apt-get update -q && \
 	apt-get install gcc-4.9 && \
