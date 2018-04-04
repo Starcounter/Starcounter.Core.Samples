@@ -16,8 +16,8 @@ RUN export DEBIAN_FRONTEND='noninteractive' && \
 	apt-get install -qy software-properties-common && \
 	add-apt-repository ppa:ubuntu-toolchain-r/test && \
 	apt-get update -q && \
-	apt-get install gcc-4.9 && \
-	apt-get upgrade libstdc++6 && \		
+	apt-get install gcc-4.9 -qy && \
+	apt-get upgrade libstdc++6 -qy && \		
 	echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ xenial main" > /etc/apt/sources.list.d/dotnetdev.list && \
 	apt-key adv --keyserver apt-mo.trafficmanager.net --recv-keys 417A0893 && \
 	apt-get update -q && \
