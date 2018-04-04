@@ -10,6 +10,8 @@ RUN export DEBIAN_FRONTEND='noninteractive' && \
 		apt-transport-https \
 		libboost-all-dev \
 		swi-prolog-nox \
+		libaio1 \
+		libstdc++6 \
         && \
 	echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ xenial main" > /etc/apt/sources.list.d/dotnetdev.list && \
 	apt-key adv --keyserver apt-mo.trafficmanager.net --recv-keys 417A0893 && \
