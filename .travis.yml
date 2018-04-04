@@ -7,7 +7,7 @@ services:
   - docker
 
 before_install:
-  - docker build -t starcounter/starcounter.core.samples .
+  - docker build -t starcounter/starcounter.nova.samples .
 
 script:
-  - docker run -it --rm starcounter/starcounter.core.samples
+  - docker run -it --rm starcounter/starcounter.nova.samples
