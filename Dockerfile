@@ -22,7 +22,7 @@ RUN export DEBIAN_FRONTEND='noninteractive' && \
 	apt-key adv --keyserver apt-mo.trafficmanager.net --recv-keys 417A0893 && \
 	apt-get update -q && \
 	apt-get install -qy dotnet-dev-1.0.4 dotnet-sdk-2.0.0 && \
-	mkdir /starcounter.core.samples && \
+	mkdir /Starcounter.Nova.Samples && \
 	mkdir dotnet-warmup && \
 	cd dotnet-warmup && \
 	dotnet new xunit && \
@@ -31,10 +31,10 @@ RUN export DEBIAN_FRONTEND='noninteractive' && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/* /tmp/*
 
-COPY Program.cs /starcounter.core.samples
-COPY Starcounter.Core.Samples.csproj /starcounter.core.samples
-COPY NuGet.Config /starcounter.core.samples
+COPY Program.cs /Starcounter.Nova.Samples
+COPY Starcounter.Nova.Samples.csproj /Starcounter.Nova.Samples
+COPY NuGet.Config /Starcounter.Nova.Samples
 
-CMD cd /starcounter.core.samples && \
+CMD cd /Starcounter.Nova.Samples && \
 	dotnet restore && \
 	dotnet run

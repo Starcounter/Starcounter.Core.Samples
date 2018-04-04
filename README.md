@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/Starcounter/Starcounter.Nova.Samples.svg?branch=master)](https://travis-ci.org/Starcounter/Starcounter.Nova.Samples)
 
-# Starcounter.Core.Samples 
+# Starcounter.Nova.Samples 
 
 This sample will run without a prior Starcounter installation or database. It currently doesn't do much, as it's intended to simply show how to create a Starcounter.Core project, create a local database programatically and connect to it.
 
