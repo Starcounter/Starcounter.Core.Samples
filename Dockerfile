@@ -1,5 +1,5 @@
 FROM ubuntu:16.04
-MAINTAINER Johan Lindh <johan@linkdata.se>
+LABEL maintainer="johan@linkdata.se"
 
 ENV DOTNET_CLI_TELEMETRY_OPTOUT 1
 ENV NUGET_XMLDOC_MODE skip
