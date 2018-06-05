@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Starcounter.Nova.Hosting" Version="0.9.5-*" />
+    <PackageReference Include="Starcounter.Nova.Hosting" Version="0.9.7-*" />
     <PackageReference Include="runtime.native.Starcounter.Bluestar2" Version="1.0.0" />
   </ItemGroup>
 
