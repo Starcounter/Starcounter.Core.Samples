@@ -4,32 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using Starcounter.Nova;
 
-// While we don't have to declare database classes as abstract,
-// by doing so we ensure that new Person() will fail to compile,
-// helping us to find the places we need to do Db.Insert<Person>().
-//
-// This limitation will be removed when the new Weaver is implemented.
 [Database]
-public abstract class Person
+public class Person
 {
     // We need to declare database fields using properties with
     // auto-implemented getter and setter.
     //
     // They must also be public and virtual.
-    public abstract string FirstName { get; set; }
+    public virtual string FirstName { get; set; }
 
     // Adding the [Index] attribute to a database field
     // will cause an index to be created on it if needed.
     [Index]
-    public abstract string LastName { get; set; }
+    public virtual string LastName { get; set; }
 
     // This property won't be stored in the database since it fails
     // the requirements listed above (it's not writeable).
-    public string FullName { get { return FirstName + " " + LastName; } }
+    public string FullName => FirstName + " " + LastName;
 }
 
 [Database]
-public abstract class Spender : Person
+public class Spender : Person
 {
     // A Db.SQL result is an IEnumerable<T> over the database class instances.
     public IEnumerable<Expense> Expenses
@@ -40,11 +35,11 @@ public abstract class Spender : Person
 }
 
 [Database]
-public abstract class Expense
+public class Expense
 {
     [Index]
-    public abstract Spender Spender { get; set; }
-    public abstract decimal Amount { get; set; }
+    public virtual Spender Spender { get; set; }
+    public virtual decimal Amount { get; set; }
 }
 
 class Program
