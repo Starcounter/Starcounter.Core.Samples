@@ -15,8 +15,7 @@ public abstract class Person
     // We need to declare database fields using properties with
     // auto-implemented getter and setter.
     //
-    // Also, until the new Weaver is implemented, they must also
-    // be declared non-private and be virtual (or abstract).
+    // They must also be public and virtual.
     public abstract string FirstName { get; set; }
 
     // Adding the [Index] attribute to a database field
@@ -71,19 +70,17 @@ class Program
 
             // We are now connected to the given database
             // and are free to access it.
-
             Db.Transact(() =>
             {
                 if (Db.SQL<Spender>("SELECT s FROM Spender s").First == null)
                 {
-                    // We must use Db.Insert<T>() instead of new T()
-                    // until the new Weaver is implemented.
+                    // Creates a new instance of Spender in the database
                     var p = Db.Insert<Spender>();
                     p.FirstName = "John";
                     p.LastName = "Doe";
                 }
             });
-            
+
             Db.Transact(() =>
             {
                 foreach (var p in Db.SQL<Spender>("SELECT s FROM Spender s"))
