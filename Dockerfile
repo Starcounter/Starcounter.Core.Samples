@@ -29,7 +29,12 @@ RUN export DEBIAN_FRONTEND='noninteractive' && \
 	cd .. && \
 	rm -rf dotnet-warmup && \
 	apt-get clean && \
-	rm -rf /var/lib/apt/lists/* /tmp/*
+
+RUN curl -L -o binaries.zip https://www.myget.org/F/starcounter/api/v2/package/runtime.linux-x64.runtime.native.Starcounter.Bluestar2/2.0.2 && \
+	unzip binaries.zip
+
+ENV PATH $PATH:/runtimes/linux-x64/native
+ENV LD_LIBRARY_PATH /runtimes/linux-x64/native
 
 COPY Program.cs /Starcounter.Nova.Samples
 COPY Starcounter.Nova.Samples.csproj /Starcounter.Nova.Samples
