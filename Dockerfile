@@ -12,6 +12,8 @@ RUN export DEBIAN_FRONTEND='noninteractive' && \
 		swi-prolog-nox \
 		libaio1 \
 		libstdc++6 \
+		curl \
+		unzip \
         && \
 	apt-get install -qy software-properties-common && \
 	add-apt-repository ppa:ubuntu-toolchain-r/test && \
