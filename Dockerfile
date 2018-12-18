@@ -1,47 +1,43 @@
-FROM ubuntu:16.04
-LABEL maintainer="johan@linkdata.se"
+FROM microsoft/dotnet:2.1-sdk
 
-ENV DOTNET_CLI_TELEMETRY_OPTOUT 1
-ENV NUGET_XMLDOC_MODE skip
-RUN export DEBIAN_FRONTEND='noninteractive' && \
-	apt-get update -q && \
-	apt-get install -qy \
-		apt-utils \
-		apt-transport-https \
-		libboost-all-dev \
-		swi-prolog-nox \
-		libaio1 \
-		libstdc++6 \
-		curl \
-		unzip \
-        && \
-	apt-get install -qy software-properties-common && \
-	add-apt-repository ppa:ubuntu-toolchain-r/test && \
-	apt-get update -q && \
-	apt-get install gcc-4.9 -qy && \
-	apt-get upgrade libstdc++6 -qy && \		
-	echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ xenial main" > /etc/apt/sources.list.d/dotnetdev.list && \
-	apt-key adv --keyserver apt-mo.trafficmanager.net --recv-keys 417A0893 && \
-	apt-get update -q && \
-	apt-get install -qy dotnet-dev-1.0.4 dotnet-sdk-2.0.0 && \
-	mkdir /Starcounter.Nova.Samples && \
-	mkdir dotnet-warmup && \
-	cd dotnet-warmup && \
-	dotnet new xunit && \
-	cd .. && \
-	rm -rf dotnet-warmup && \
-	apt-get clean && \
+ENV BLUESTAR_PACKAGE https://www.myget.org/F/starcounter/api/v2/package/runtime.linux-x64.runtime.native.Starcounter.Bluestar2/2.0.2
 
-RUN curl -L -o binaries.zip https://www.myget.org/F/starcounter/api/v2/package/runtime.linux-x64.runtime.native.Starcounter.Bluestar2/2.0.2 && \
-	unzip binaries.zip
+WORKDIR /app
 
-ENV PATH $PATH:/runtimes/linux-x64/native
-ENV LD_LIBRARY_PATH /runtimes/linux-x64/native
+# Copy csproj, NuGet.Config, and restore as distinct layers
+COPY *.csproj ./
+COPY NuGet.Config ./
+RUN dotnet restore
 
-COPY Program.cs /Starcounter.Nova.Samples
-COPY Starcounter.Nova.Samples.csproj /Starcounter.Nova.Samples
-COPY NuGet.Config /Starcounter.Nova.Samples
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o out
 
-CMD cd /Starcounter.Nova.Samples && \
-	dotnet restore && \
-	dotnet run
+# Install Bluestar binaries
+WORKDIR /opt/starcounter/bluestar
+RUN apt-get update && apt-get install -y \
+    && --no-install-recommends apt-utils \
+    && unzip \ 
+    && swi-prolog-nox \
+    && libaio1
+
+# Can this be simplified into one line? Should be possible to pipe
+RUN curl -L -o bluestar.zip ${BLUESTAR_PACKAGE}
+RUN unzip bluestar.zip
+
+# Here we should move the result into the correct directories:
+# - executables to /usr/local/bin
+# - shared libraries to /usr/local/lib
+# - everything else to /opt/starcounter
+
+# This shouldn't be necessary if we put the stuff in the right places
+ENV PATH ${PATH}:/opt/starcounter/bluestar/runtimes/linux-x64/native
+ENV LD_LIBRARY_PATH /opt/starcounter/bluestar/runtimes/linux-x64/native
+
+WORKDIR /app
+
+# We should use the runtime image microsoft/dotnet:2.1-runtime
+# and copy only the things we need such as the /app/out directory
+# and the bluestar binaries
+
+ENTRYPOINT [ "dotnet", "out/Starcounter.Nova.Samples.dll" ]
