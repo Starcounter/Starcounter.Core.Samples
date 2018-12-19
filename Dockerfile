@@ -1,40 +1,32 @@
-FROM ubuntu:16.04
-LABEL maintainer="johan@linkdata.se"
+FROM microsoft/dotnet:2.1-sdk
 
-ENV DOTNET_CLI_TELEMETRY_OPTOUT 1
-ENV NUGET_XMLDOC_MODE skip
-RUN export DEBIAN_FRONTEND='noninteractive' && \
-	apt-get update -q && \
-	apt-get install -qy \
-		apt-utils \
-		apt-transport-https \
-		libboost-all-dev \
-		swi-prolog-nox \
-		libaio1 \
-		libstdc++6 \
-        && \
-	apt-get install -qy software-properties-common && \
-	add-apt-repository ppa:ubuntu-toolchain-r/test && \
-	apt-get update -q && \
-	apt-get install gcc-4.9 -qy && \
-	apt-get upgrade libstdc++6 -qy && \		
-	echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ xenial main" > /etc/apt/sources.list.d/dotnetdev.list && \
-	apt-key adv --keyserver apt-mo.trafficmanager.net --recv-keys 417A0893 && \
-	apt-get update -q && \
-	apt-get install -qy dotnet-dev-1.0.4 dotnet-sdk-2.0.0 && \
-	mkdir /Starcounter.Nova.Samples && \
-	mkdir dotnet-warmup && \
-	cd dotnet-warmup && \
-	dotnet new xunit && \
-	cd .. && \
-	rm -rf dotnet-warmup && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/* /tmp/*
+ENV BLUESTAR_PACKAGE https://www.myget.org/F/starcounter/api/v2/package/runtime.linux-x64.runtime.native.Starcounter.Bluestar2/2.0.2
 
-COPY Program.cs /Starcounter.Nova.Samples
-COPY Starcounter.Nova.Samples.csproj /Starcounter.Nova.Samples
-COPY NuGet.Config /Starcounter.Nova.Samples
+WORKDIR /app
 
-CMD cd /Starcounter.Nova.Samples && \
-	dotnet restore && \
-	dotnet run
+# Copy csproj, NuGet.Config, and restore as distinct layers
+COPY *.csproj ./
+COPY NuGet.Config ./
+RUN dotnet restore
+
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o out
+
+# Install packages required to install and use bluestar binaries
+RUN apt-get -qq update && apt-get -qq install -y \
+    unzip \ 
+    swi-prolog-nox \
+    libaio1
+
+# Install Bluestar binaries and make them executable
+RUN curl -L -o /opt/bluestar.zip ${BLUESTAR_PACKAGE}
+RUN unzip -j /opt/bluestar.zip 'runtimes/linux-x64/native/*' -d /opt/starcounter \ 
+    && rm /opt/bluestar.zip \
+    && chmod 700 /opt/starcounter/*
+
+# Make it possible for Nova to find Bluestar binaries
+ENV PATH ${PATH}:/opt/starcounter
+ENV LD_LIBRARY_PATH /opt/starcounter
+
+ENTRYPOINT [ "dotnet", "out/Starcounter.Nova.Samples.dll" ]
