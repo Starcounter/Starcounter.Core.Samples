@@ -13,17 +13,19 @@ RUN dotnet restore
 COPY . ./
 RUN dotnet publish -c Release -o out
 
-# Install Bluestar binaries
+# Install packages required to install and use bluestar binaries
 RUN apt-get -qq update && apt-get -qq install -y \
     unzip \ 
     swi-prolog-nox \
     libaio1
 
+# Install Bluestar binaries and make them executable
 RUN curl -L -o /opt/bluestar.zip ${BLUESTAR_PACKAGE}
 RUN unzip -j /opt/bluestar.zip 'runtimes/linux-x64/native/*' -d /opt/starcounter \ 
     && rm /opt/bluestar.zip \
     && chmod 700 /opt/starcounter/*
 
+# Make it possible for Nova to find Bluestar binaries
 ENV PATH ${PATH}:/opt/starcounter
 ENV LD_LIBRARY_PATH /opt/starcounter
 
